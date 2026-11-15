@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Image Compressor - QuickConvertz</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI',Arial,sans-serif; }
+  body { background:#0f1115; color:#eee; padding:20px; }
+  .back { color:#ffb84f; text-decoration:none; display:inline-block; margin-bottom:20px; }
+  .wrap { max-width:600px; margin:0 auto; }
+  h1 { color:#ffb84f; margin-bottom:20px; }
+  input[type=file] { width:100%; padding:14px; border-radius:10px; border:1px solid #2a2f3a; background:#1b1f29; color:#eee; margin-bottom:16px; }
+  .row { display:flex; align-items:center; gap:10px; background:#1b1f29; border:1px solid #2a2f3a; border-radius:10px; padding:12px 16px; margin-bottom:14px; }
+  .row label { font-size:0.9em; color:#aaa; white-space:nowrap; }
+  input[type=range] { flex:1; }
+  img#preview { max-width:100%; border-radius:10px; margin-bottom:14px; display:none; }
+  .sizeInfo { display:flex; gap:12px; margin-bottom:14px; }
+  .sizeInfo div { flex:1; background:#1b1f29; border:1px solid #2a2f3a; border-radius:10px; padding:12px; text-align:center; }
+  .sizeInfo .num { color:#ffb84f; font-weight:bold; font-size:1.1em; }
+  .sizeInfo .lbl { font-size:0.75em; color:#aaa; }
+  button { width:100%; padding:14px; border:none; border-radius:10px; background:#ffb84f; color:#0f1115; font-weight:bold; font-size:1em; }
+  button:disabled { opacity:0.5; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="../index.html">← Back to QuickConvertz</a>
+  <h1>🗜️ Image Compressor</h1>
+
+  <input type="file" id="fileInput" accept="image/*" onchange="loadImage(event)">
+
+  <div class="row">
+    <label>Quality: <span id="qVal">70</span>%</label>
+    <input type="range" id="quality" min="10" max="100" value="70" oninput="document.getElementById('qVal').textContent=this.value; compress()">
+  </div>
+
+  <img id="preview">
+
+  <div class="sizeInfo">
+    <div><div class="num" id="origSize">--</div><div class="lbl">Original Size</div></div>
+    <div><div class="num" id="newSize">--</div><div class="lbl">Compressed Size</div></div>
+  </div>
+
+  <button id="downloadBtn" onclick="download()" disabled>⬇️ Download Compressed Image</button>
+</div>
+<script>
+  let img = new Image();
+  let canvas = document.createElement('canvas');
+
+  function loadImage(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    document.getElementById('origSize').textContent = (file.size/1024).toFixed(1) + ' KB';
+    const reader = new FileReader();
+    reader.onload = function(ev) {
+      img = new Image();
+      img.onload = compress;
+      img.src = ev.target.result;
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function compress() {
+    if (!img.src) return;
+    canvas.width = img.width;
+    canvas.height = img.height;
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(img, 0, 0);
+    const quality = document.getElementById('quality').value / 100;
+    const dataUrl = canvas.toDataURL('image/jpeg', quality);
+
+    document.getElementById('preview').src = dataUrl;
+    document.getElementById('preview').style.display = 'block';
+
+    const sizeKB = Math.round((dataUrl.length * 0.75) / 1024);
+    document.getElementById('newSize').textContent = sizeKB + ' KB';
+    document.getElementById('downloadBtn').disabled = false;
+    window.lastDataUrl = dataUrl;
+  }
+
+  function download() {
+    const a = document.createElement('a');
+    a.href = window.lastDataUrl;
+    a.download = 'compressed-image.jpg';
+    a.click();
+  }
+</script>
+</body>
+</html>
