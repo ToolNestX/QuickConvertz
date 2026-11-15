@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Currency Converter - QuickConvertz</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI',Arial,sans-serif; }
+  body { background:#0f1115; color:#eee; padding:20px; }
+  .back { color:#ffb84f; text-decoration:none; display:inline-block; margin-bottom:20px; }
+  .wrap { max-width:500px; margin:0 auto; }
+  h1 { color:#ffb84f; margin-bottom:20px; }
+  input, select { width:100%; padding:14px; border-radius:10px; border:1px solid #2a2f3a; background:#1b1f29; color:#eee; font-size:1em; margin-bottom:14px; }
+  .row { display:flex; gap:10px; }
+  .row > * { flex:1; }
+  #result { background:#1b1f29; border:1px solid #ffb84f; border-radius:10px; padding:18px; text-align:center; font-size:1.3em; color:#ffb84f; font-weight:bold; margin-top:6px; }
+  #status { text-align:center; color:#888; font-size:0.85em; margin-top:10px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="../index.html">← Back to QuickConvertz</a>
+  <h1>💱 Currency Converter</h1>
+
+  <input type="number" id="amount" value="1" oninput="convert()">
+
+  <div class="row">
+    <select id="from" onchange="convert()"></select>
+    <select id="to" onchange="convert()"></select>
+  </div>
+
+  <div id="result">--</div>
+  <div id="status">Loading rates...</div>
+</div>
+<script>
+  let rates = {};
+  const currencies = ["USD","EUR","GBP","PKR","INR","AED","SAR","CNY","JPY","AUD","CAD"];
+
+  function populate(id, def) {
+    const sel = document.getElementById(id);
+    currencies.forEach(c => sel.innerHTML += `<option value="${c}" ${c===def?'selected':''}>${c}</option>`);
+  }
+  populate('from','USD');
+  populate('to','PKR');
+
+  fetch('https://api.exchangerate-api.com/v4/latest/USD')
+    .then(r => r.json())
+    .then(data => {
+      rates = data.rates;
+      document.getElementById('status').textContent = 'Rates updated: ' + data.date;
+      convert();
+    })
+    .catch(() => {
+      document.getElementById('status').textContent = '⚠️ Could not load live rates. Check internet connection.';
+    });
+
+  function convert() {
+    const amount = parseFloat(document.getElementById('amount').value) || 0;
+    const from = document.getElementById('from').value;
+    const to = document.getElementById('to').value;
+    if (!rates[from] || !rates[to]) return;
+    const usdAmount = amount / rates[from];
+    const result = usdAmount * rates[to];
+    document.getElementById('result').textContent = result.toFixed(2) + ' ' + to;
+  }
+</script>
+</body>
+</html>
