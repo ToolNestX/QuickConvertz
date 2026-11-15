@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Image Format Converter - QuickConvertz</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI',Arial,sans-serif; }
+  body { background:#0f1115; color:#eee; padding:20px; }
+  .back { color:#ffb84f; text-decoration:none; display:inline-block; margin-bottom:20px; }
+  .wrap { max-width:600px; margin:0 auto; }
+  h1 { color:#ffb84f; margin-bottom:20px; }
+  input[type=file] { width:100%; padding:14px; border-radius:10px; border:1px solid #2a2f3a; background:#1b1f29; color:#eee; margin-bottom:16px; }
+  select { width:100%; padding:14px; border-radius:10px; border:1px solid #2a2f3a; background:#1b1f29; color:#eee; font-size:1em; margin-bottom:16px; }
+  img#preview { max-width:100%; border-radius:10px; margin-bottom:16px; display:none; }
+  button { width:100%; padding:14px; border:none; border-radius:10px; background:#ffb84f; color:#0f1115; font-weight:bold; font-size:1em; }
+  button:disabled { opacity:0.5; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="../index.html">← Back to QuickConvertz</a>
+  <h1>🖼️ Image Format Converter</h1>
+
+  <input type="file" id="fileInput" accept="image/*" onchange="loadImage(event)">
+
+  <select id="format">
+    <option value="image/jpeg">Convert to JPG</option>
+    <option value="image/png">Convert to PNG</option>
+    <option value="image/webp">Convert to WEBP</option>
+  </select>
+
+  <img id="preview">
+
+  <button id="downloadBtn" onclick="download()" disabled>⬇️ Download Converted Image</button>
+</div>
+<script>
+  let img = new Image();
+  let canvas = document.createElement('canvas');
+
+  function loadImage(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function(ev) {
+      img = new Image();
+      img.onload = () => {
+        document.getElementById('preview').src = img.src;
+        document.getElementById('preview').style.display = 'block';
+        document.getElementById('downloadBtn').disabled = false;
+      };
+      img.src = ev.target.result;
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function download() {
+    canvas.width = img.width;
+    canvas.height = img.height;
+    const ctx = canvas.getContext('2d');
+    if (document.getElementById('format').value === 'image/jpeg') {
+      ctx.fillStyle = '#fff';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+    }
+    ctx.drawImage(img, 0, 0);
+    const format = document.getElementById('format').value;
+    const ext = format.split('/')[1];
+    const dataUrl = canvas.toDataURL(format, 0.92);
+    const a = document.createElement('a');
+    a.href = dataUrl;
+    a.download = 'converted-image.' + ext;
+    a.click();
+  }
+</script>
+</body>
+</html>
