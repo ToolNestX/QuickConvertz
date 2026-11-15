@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Percentage Calculator - QuickConvertz</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI',Arial,sans-serif; }
+  body { background:#0f1115; color:#eee; padding:20px; }
+  .back { color:#ffb84f; text-decoration:none; display:inline-block; margin-bottom:20px; }
+  .wrap { max-width:500px; margin:0 auto; }
+  h1 { color:#ffb84f; margin-bottom:20px; }
+  .section { background:#1b1f29; border:1px solid #2a2f3a; border-radius:12px; padding:16px; margin-bottom:16px; }
+  .section h3 { color:#ffb84f; font-size:0.95em; margin-bottom:10px; }
+  .row { display:flex; align-items:center; gap:8px; margin-bottom:10px; flex-wrap:wrap; }
+  .row span { color:#aaa; font-size:0.9em; }
+  input { flex:1; min-width:70px; padding:10px; border-radius:8px; border:1px solid #2a2f3a; background:#0f1115; color:#eee; font-size:0.95em; }
+  .result { background:#0f1115; border:1px solid #ffb84f; border-radius:8px; padding:12px; text-align:center; color:#ffb84f; font-weight:bold; margin-top:8px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="../index.html">← Back to QuickConvertz</a>
+  <h1>📊 Percentage Calculator</h1>
+
+  <div class="section">
+    <h3>What is X% of Y?</h3>
+    <div class="row">
+      <span>What is</span><input type="number" id="a1" oninput="calc1()" value="10">
+      <span>% of</span><input type="number" id="b1" oninput="calc1()" value="200">
+    </div>
+    <div class="result" id="r1">--</div>
+  </div>
+
+  <div class="section">
+    <h3>X is what % of Y?</h3>
+    <div class="row">
+      <input type="number" id="a2" oninput="calc2()" value="50">
+      <span>is what % of</span><input type="number" id="b2" oninput="calc2()" value="200">
+    </div>
+    <div class="result" id="r2">--</div>
+  </div>
+
+  <div class="section">
+    <h3>Percentage Increase/Decrease</h3>
+    <div class="row">
+      <span>From</span><input type="number" id="a3" oninput="calc3()" value="100">
+      <span>to</span><input type="number" id="b3" oninput="calc3()" value="150">
+    </div>
+    <div class="result" id="r3">--</div>
+  </div>
+</div>
+<script>
+  function calc1() {
+    const a = parseFloat(document.getElementById('a1').value) || 0;
+    const b = parseFloat(document.getElementById('b1').value) || 0;
+    document.getElementById('r1').textContent = ((a/100)*b).toFixed(2);
+  }
+  function calc2() {
+    const a = parseFloat(document.getElementById('a2').value) || 0;
+    const b = parseFloat(document.getElementById('b2').value) || 0;
+    document.getElementById('r2').textContent = b ? ((a/b)*100).toFixed(2) + '%' : '--';
+  }
+  function calc3() {
+    const a = parseFloat(document.getElementById('a3').value) || 0;
+    const b = parseFloat(document.getElementById('b3').value) || 0;
+    if (!a) { document.getElementById('r3').textContent = '--'; return; }
+    const change = ((b-a)/a)*100;
+    const sign = change >= 0 ? '+' : '';
+    document.getElementById('r3').textContent = sign + change.toFixed(2) + '%';
+  }
+  calc1(); calc2(); calc3();
+</script>
+</body>
+</html>
