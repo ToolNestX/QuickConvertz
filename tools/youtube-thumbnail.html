@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YouTube Thumbnail Downloader - QuickConvertz</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI',Arial,sans-serif; }
+  body { background:#0f1115; color:#eee; padding:20px; }
+  .back { color:#ffb84f; text-decoration:none; display:inline-block; margin-bottom:20px; }
+  .wrap { max-width:600px; margin:0 auto; }
+  h1 { color:#ffb84f; margin-bottom:20px; }
+  input { width:100%; padding:14px; border-radius:10px; border:1px solid #2a2f3a; background:#1b1f29; color:#eee; font-size:1em; margin-bottom:14px; }
+  button { width:100%; padding:14px; border:none; border-radius:10px; background:#ffb84f; color:#0f1115; font-weight:bold; font-size:1em; margin-bottom:16px; }
+  .thumbs { display:grid; gap:14px; }
+  .thumb-card { background:#1b1f29; border:1px solid #2a2f3a; border-radius:12px; padding:14px; text-align:center; }
+  .thumb-card img { max-width:100%; border-radius:8px; margin-bottom:10px; }
+  .thumb-card a { display:inline-block; background:#ffb84f; color:#0f1115; padding:8px 16px; border-radius:8px; text-decoration:none; font-weight:bold; font-size:0.85em; }
+  #error { color:#ff6b6b; text-align:center; margin-bottom:10px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="../index.html">← Back to QuickConvertz</a>
+  <h1>▶️ YouTube Thumbnail Downloader</h1>
+
+  <input id="urlInput" placeholder="Paste YouTube video link here...">
+  <button onclick="getThumbnails()">Get Thumbnails</button>
+  <div id="error"></div>
+  <div class="thumbs" id="thumbs"></div>
+</div>
+<script>
+  function extractVideoId(url) {
+    const patterns = [
+      /youtu\.be\/([^?&]+)/,
+      /youtube\.com\/watch\?v=([^?&]+)/,
+      /youtube\.com\/shorts\/([^?&]+)/,
+      /youtube\.com\/embed\/([^?&]+)/
+    ];
+    for (const p of patterns) {
+      const match = url.match(p);
+      if (match) return match[1];
+    }
+    return null;
+  }
+
+  function getThumbnails() {
+    const url = document.getElementById('urlInput').value.trim();
+    const id = extractVideoId(url);
+    const errorEl = document.getElementById('error');
+    const thumbsEl = document.getElementById('thumbs');
+    thumbsEl.innerHTML = '';
+    errorEl.textContent = '';
+
+    if (!id) {
+      errorEl.textContent = '❌ Invalid YouTube URL. Please check and try again.';
+      return;
+    }
+
+    const sizes = [
+      { label: 'Max Resolution', file: 'maxresdefault' },
+      { label: 'High Quality', file: 'hqdefault' },
+      { label: 'Medium Quality', file: 'mqdefault' },
+      { label: 'Standard', file: 'sddefault' }
+    ];
+
+    sizes.forEach(s => {
+      const imgUrl = `https://img.youtube.com/vi/${id}/${s.file}.jpg`;
+      thumbsEl.innerHTML += `
+        <div class="thumb-card">
+          <img src="${imgUrl}">
+          <div>${s.label}</div><br>
+          <a href="${imgUrl}" download="thumbnail-${s.file}.jpg" target="_blank">⬇️ Download</a>
+        </div>`;
+    });
+  }
+</script>
+</body>
+</html>
